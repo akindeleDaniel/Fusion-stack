@@ -1,0 +1,30 @@
+[
+  {
+    "firstName": "Peace",
+    "lastName": "Joshua",
+    "password": "1234",
+    "email": "peacejoshua223@yahoo.com",
+    "phone": "08076834322"
+  },
+  {
+    "firstName": "Jaime",
+    "lastName": "Stone",
+    "password": "1234",
+    "email": "jaimestone32@yahoo.com",
+    "phone": "08078320975"
+  },
+  {
+    "firstName": "Jason",
+    "lastName": "King",
+    "password": "8801",
+    "email": "kingjason001@yahoo.com",
+    "phone": "08078320975"
+  },
+  {
+    "firstName": "Maurice",
+    "lastName": "Jackson",
+    "password": "5562",
+    "email": "mauricejackson@yahoo.com",
+    "phone": "08145397234"
+  }
+]

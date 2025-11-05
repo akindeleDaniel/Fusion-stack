@@ -1,0 +1,1 @@
+{"root":["./src/app.ts","./src/com-api-server.d.ts","./src/express-api-server.ts","./src/my-aspi-server.ts","./src/middlewares/index.ts","./src/middlewares/log.ts","./src/middlewares/time.ts","./src/routes/calculator.ts","./src/routes/health.ts","./src/routes/index.ts","./src/types/express/global.d.ts"],"version":"5.9.3"}

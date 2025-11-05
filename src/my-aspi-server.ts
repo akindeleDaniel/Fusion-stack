@@ -1,6 +1,8 @@
 import http  from "http"
 import fs from "fs"
 import {parse} from "url"
+import { ServerResponse} from "http"
+import { IncomingMessage } from "http"
 
 const PORT  = 3000
 const USERS_FILE = './users.json'
@@ -10,17 +12,24 @@ function readUsers() {
         const data = fs.readFileSync(USERS_FILE, 'utf-8')
     return JSON.parse(data || '[]')
 }
-
-function writeusrers(users){
+interface User {
+  firstName:string
+  lastName:string
+  phone:number
+  email:string
+  address:string
+  password:number
+}
+function writeUsers(users:User[]){
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2))
 }
 
-function send(res, statusCode, data){
+function send(res:ServerResponse, statusCode:number, data:unknown){
     res.writeHead(statusCode,{'Content-Type': 'application/json'})
     res.end(JSON.stringify(data))
 }
 
-function parseBody(req, callback){
+function parseBody(req:IncomingMessage, callback:(body:any) => void){
     let body = ''
     req.on('data', chunk => body += chunk)
     req.on('end', () => {
@@ -32,12 +41,12 @@ function parseBody(req, callback){
     })
 }
 
-const server = http.createServer((req, res) => {
-    const {pathname} = parse(req.url, true)
+const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
+    const {pathname} = parse(req.url ?? '/', true)
    
-    //  ===== REGISTER ======
-    if (req.method ==== 'POST' && pathname === '/register') {
-      parseBody(req, body => {
+    //  ===== REGISTER ====== 
+    if (req.method === 'POST' && pathname === '/register') {
+       parseBody(req, (body) =>{
       const { firstName, lastName, phone, email, address, password } = body;
 
       // Validate required fields
@@ -48,7 +57,7 @@ const server = http.createServer((req, res) => {
       const users = readUsers();
 
       // Check if email is already taken
-      if (users.find(u => u.email === email)) {
+      if (users.find((u: any) => u.email === email)) {
         return send(res, 409, { message: 'Email already registered' });
       }
 
@@ -72,7 +81,7 @@ const server = http.createServer((req, res) => {
     parseBody(req, body => {
       const { email, password } = body;
       const users = readUsers();
-      const user = users.find(u => u.email === email && u.password === password);
+      const user = users.find((u: any) => u.email === email && u.password === password);
       if (!user) return send(res, 401, { message: 'Invalid credentials' });
 
       send(res, 200, { message: 'Login successful' });
@@ -85,7 +94,7 @@ const server = http.createServer((req, res) => {
       if (!email) return send(res, 400, { message: 'Email is required to update' });
 
       const users = readUsers();
-      const user = users.find(u => u.email === email);
+      const user = users.find((u: any) => u.email === email);
       if (!user) return send(res, 404, { message: 'User not found' });
 
       if (firstName) user.firstName = firstName;
@@ -105,7 +114,7 @@ const server = http.createServer((req, res) => {
 
       let users = readUsers();
       const initialLength = users.length;
-      users = users.filter(u => u.email !== email);
+      users = users.filter((u: any) => u.email !== email);
 
       if (users.length === initialLength)
         return send(res, 404, { message: 'User not found' });
