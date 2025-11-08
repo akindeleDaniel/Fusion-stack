@@ -52,8 +52,8 @@ app.get('/profile', logger, authorization, (req, res) => {
     res.json({ Name: 'Danny', Role: 'Admin' });
 });
 app.post('/register', (req, res) => {
-    const { firstName, lastName, email, DateOfBirth, password, gender } = req.body;
-    if (!firstName || !lastName || !email || !DateOfBirth || !password || !gender) {
+    const { firstName, lastName, email, dateOfBirth, password, gender } = req.body;
+    if (!firstName || !lastName || !email || !dateOfBirth || !password || !gender) {
         res.status(400).json({ message: 'All areas reqiured' });
         return;
     }
@@ -61,10 +61,20 @@ app.post('/register', (req, res) => {
         firstName,
         lastName,
         email,
-        DateOfBirth,
+        dateOfBirth,
         password,
         gender
     };
+    const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailFormat.test(email)) {
+        res.status(400).json({ error: 'Invalid email format' });
+        return;
+    }
+    const dobFormat = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!dobFormat.test(dateOfBirth)) {
+        res.status(400).json({ error: 'Invalid date of birth format' });
+        return;
+    }
     users.push(newUser);
     res.status(200).json({ message: 'Registration sucessful', data: newUser });
 });

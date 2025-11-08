@@ -47,7 +47,7 @@ interface User  {
     firstName:string,
     lastName: string
     email:string
-    DateOfBirth: string
+    dateOfBirth: string
     password:string
     gender:string
 }
@@ -67,9 +67,9 @@ app.get('/profile',logger,authorization,(req:Request,res:Response)=>{
 })
 
 app.post('/register',(req:Request,res:Response)=>{
-    const {firstName,lastName,email,DateOfBirth,password,gender} = req.body
+    const {firstName,lastName,email,dateOfBirth,password,gender} = req.body
 
-    if (!firstName||!lastName||!email||!DateOfBirth||!password||!gender){
+    if (!firstName||!lastName||!email||!dateOfBirth||!password||!gender){
        res.status(400).json({message:'All areas reqiured'})
         return }
 
@@ -77,10 +77,39 @@ app.post('/register',(req:Request,res:Response)=>{
             firstName,
             lastName,
             email,
-            DateOfBirth,
+            dateOfBirth,
             password,
             gender
         }
+
+        const emailFormat= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailFormat.test(email)){
+            res.status(400).json({error:'Invalid email format'})
+        return }
+                // Date of birth 
+
+        const dobcheck =req.body.dateOfBirth
+        const dobFormat = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/
+        if (!dobFormat.test(dateOfBirth)){
+            res.status(400).json({error:'Invalid date of birth format'})
+        return }
+
+        const[day,month,year] = dateOfBirth.split("/").map(Number)
+        const birthDate = new Date(year,month - 1,day)
+        const today = new Date()
+        let age = today.getFullYear() - birthDate.getFullYear()
+        const actualMonth = today.getMonth() - birthDate.getMonth()
+        if (actualMonth < 0 || (actualMonth === 0 && today.getDate() < birthDate.getDate())){
+            age--
+        }
+
+        if (age > 120 || age < 12 || isNaN(age)){
+            res.status(400).json({error: 'Inavlid date of birth'})
+        return}
+
+
+
+
         users.push(newUser)
 
         res.status(200).json({message:'Registration sucessful', data:newUser})
