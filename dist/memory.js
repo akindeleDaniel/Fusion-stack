@@ -70,9 +70,33 @@ app.post('/register', (req, res) => {
         res.status(400).json({ error: 'Invalid email format' });
         return;
     }
-    const dobFormat = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/;
+    // Date of birth 
+    const dobcheck = req.body.dateOfBirth;
+    const dobFormat = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
     if (!dobFormat.test(dateOfBirth)) {
         res.status(400).json({ error: 'Invalid date of birth format' });
+        return;
+    }
+    const [day, month, year] = dateOfBirth.split("/").map(Number);
+    if (day < 1 || day > 31 || month < 1 || month > 12) {
+        res.status(400).json({ error: 'Please enter date of birth' });
+        return;
+    }
+    const birthDate = new Date(year, month - 1, day);
+    if (birthDate.getFullYear() !== year ||
+        birthDate.getMonth() !== month - 1 ||
+        birthDate.getDate() !== day) {
+        res.status(400).json({ error: "Not a calendar date" });
+        return;
+    }
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const actualMonth = today.getMonth() - birthDate.getMonth();
+    if (actualMonth < 0 || (actualMonth === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    if (age > 120 || age < 12 || isNaN(age)) {
+        res.status(400).json({ error: 'Inavlid date of birth' });
         return;
     }
     users.push(newUser);
